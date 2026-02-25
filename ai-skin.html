@@ -1,0 +1,149 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<title>科学透明化中心 - CORONG 蔻容</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<div class="header">
+  <div class="logo">CORONG 蔻容</div>
+  <div class="nav">
+    <a href="index.html">首页</a>
+    <a href="climate.html">气象化妆间</a>
+    <a href="ugc.html">UGC照片流</a>
+    <a href="ai-skin.html">AI肤色映射</a>
+    <a href="science.html">科学中心</a>
+  </div>
+</div>
+
+
+  <div class="container">
+    <h1 class="page-title">🎨 AI肤色映射 · 20色专业选型</h1>
+    
+    <!-- 当前肤色显示 -->
+    <div class="card" style="text-align: center;">
+      <h3>当前选择</h3>
+      <div id="skin-result" style="font-size: 18px; color: #d94a87; font-weight: 500;">✨ 请点击下方肤色圆点 ✨</div>
+    </div>
+
+    <!-- 肤色选择区 - 20色圆形网格 -->
+    <div class="card">
+      <h3 style="text-align: center; margin-bottom: 20px;">👆 点击选择你的肤色</h3>
+      
+      <!-- 第1排 1-5 -->
+      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+        <div class="skin skin-1" data-level="1" title="1 冷调瓷白"></div>
+        <div class="skin skin-2" data-level="2" title="2 冷调象牙白"></div>
+        <div class="skin skin-3" data-level="3" title="3 冷调亮肤色"></div>
+        <div class="skin skin-4" data-level="4" title="4 中性亮白"></div>
+        <div class="skin skin-5" data-level="5" title="5 中性自然白"></div>
+      </div>
+      
+      <!-- 第2排 6-10 -->
+      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+        <div class="skin skin-6" data-level="6" title="6 中性标准肤色"></div>
+        <div class="skin skin-7" data-level="7" title="7 暖调象牙白"></div>
+        <div class="skin skin-8" data-level="8" title="8 暖调自然偏白"></div>
+        <div class="skin skin-9" data-level="9" title="9 暖调自然色"></div>
+        <div class="skin skin-10" data-level="10" title="10 暖调浅小麦"></div>
+      </div>
+      
+      <!-- 第3排 11-15 -->
+      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+        <div class="skin skin-11" data-level="11" title="11 自然小麦色"></div>
+        <div class="skin skin-12" data-level="12" title="12 浅古铜色"></div>
+        <div class="skin skin-13" data-level="13" title="13 中调小麦"></div>
+        <div class="skin skin-14" data-level="14" title="14 暖调小麦"></div>
+        <div class="skin skin-15" data-level="15" title="15 深小麦色"></div>
+      </div>
+      
+      <!-- 第4排 16-20 -->
+      <div style="display: flex; justify-content: center; gap: 15px; margin-bottom: 15px; flex-wrap: wrap;">
+        <div class="skin skin-16" data-level="16" title="16 健康古铜"></div>
+        <div class="skin skin-17" data-level="17" title="17 深古铜色"></div>
+        <div class="skin skin-18" data-level="18" title="18 冷调深肤色"></div>
+        <div class="skin skin-19" data-level="19" title="19 暖调深棕"></div>
+        <div class="skin skin-20" data-level="20" title="20 黑调健康肌"></div>
+      </div>
+
+      <!-- 肤色编号说明 -->
+      <div style="text-align: center; margin-top: 15px; color: #888; font-size: 13px;">
+        <span>共20色 · 点击圆形选择</span>
+      </div>
+    </div>
+
+    <!-- 推荐产品卡片 -->
+    <div class="card">
+      <h3>💄 推荐产品搭配</h3>
+      <div style="margin: 15px 0; padding: 10px; background: #fff6f9; border-radius: 8px;">
+        <div style="margin: 8px 0;"><strong>粉底液：</strong> <span id="foundation">--</span></div>
+        <div style="margin: 8px 0;"><strong>妆前乳：</strong> <span id="primer">--</span></div>
+        <div style="margin: 8px 0;"><strong>散粉：</strong> <span id="powder">--</span></div>
+      </div>
+    </div>
+
+    <!-- 操作按钮 -->
+    <div style="text-align: center; margin: 30px 0;">
+      <button class="btn btn-tiktok">🎵 TikTok试色</button>
+      <button class="btn btn-shopee">🛒 Shopee购买</button>
+    </div>
+  </div>
+
+  <div class="footer">
+  蔻容科技有限公司<br>
+  版权所有 © 2026 CORONG. All Rights Reserved.
+</div>
+
+<script src="common.js"></script>
+
+  
+  <!-- 页面专用脚本：激活选中状态 -->
+  <script>
+    document.addEventListener('DOMContentLoaded', function() {
+      // 初始化肤色映射
+      if (typeof initSkinMapping === 'function') {
+        initSkinMapping();
+      }
+      
+      // 为所有肤色圆点添加点击高亮效果
+      const skinDots = document.querySelectorAll('.skin');
+      const savedLevel = localStorage.getItem('skinLevel');
+      
+      // 如果有保存的肤色，高亮对应的圆点
+      if (savedLevel) {
+        skinDots.forEach(dot => {
+          if (dot.dataset.level === savedLevel) {
+            dot.classList.add('active');
+          }
+        });
+      }
+      
+      // 点击事件
+      skinDots.forEach(dot => {
+        dot.addEventListener('click', function() {
+          // 移除所有active类
+          skinDots.forEach(d => d.classList.remove('active'));
+          // 给当前添加active类
+          this.classList.add('active');
+          
+          // 触发肤色更新 (common.js里的逻辑)
+          const level = this.dataset.level;
+          localStorage.setItem('skinLevel', level);
+          if (typeof renderSkinResult === 'function') {
+            renderSkinResult(level);
+          }
+        });
+      });
+      
+      // 按钮提醒
+      document.querySelectorAll('.btn-tiktok, .btn-shopee').forEach(btn => {
+        btn.addEventListener('click', () => {
+          alert('功能即将上线');
+        });
+      });
+    });
+  </script>
+</body>
+</html>
