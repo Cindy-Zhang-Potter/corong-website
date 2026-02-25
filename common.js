@@ -9,22 +9,44 @@ if (location.pathname.includes("climate.html")) {
   getLocationAndWeather();
 }
 
-// 定位
+// 定位 - 使用 Cloudflare 的 /cdn-cgi/trace
 function getLocationAndWeather() {
-  if (!navigator.geolocation) {
-    alert("您的浏览器不支持定位");
-    useMockWeather();
-    return;
-  }
-
-  navigator.geolocation.getCurrentPosition(pos => {
-    const lat = pos.coords.latitude;
-    const lon = pos.coords.longitude;
-    fetchWeather(lat, lon);
-  }, err => {
-    console.log(err);
-    useMockWeather();
-  });
+  // 尝试从 Cloudflare 获取地理位置
+  fetch('/cdn-cgi/trace')
+    .then(res => res.text())
+    .then(data => {
+      // 解析 trace 数据
+      const lines = data.split('\n');
+      const trace = {};
+      lines.forEach(line => {
+        const [key, value] = line.split('=');
+        if (key && value) trace[key] = value;
+      });
+      
+      console.log('Cloudflare 位置信息:', trace);
+      
+      // 从 loc 字段获取经纬度 (格式: "lat,lon")
+      let lat, lon;
+      
+      if (trace.loc && trace.loc.includes(',')) {
+        const parts = trace.loc.split(',');
+        lat = parts[0];
+        lon = parts[1];
+        console.log(`使用 Cloudflare 定位: ${lat}, ${lon}`);
+      } else {
+        // 如果没有获取到，使用默认曼谷
+        lat = 13.7563;
+        lon = 100.5018;
+        console.log('使用默认位置: 曼谷');
+      }
+      
+      // 获取天气
+      fetchWeather(lat, lon);
+    })
+    .catch(err => {
+      console.log('获取 Cloudflare 位置失败，使用默认曼谷', err);
+      fetchWeather(13.7563, 100.5018); // 曼谷
+    });
 }
 
 // 获取真实天气
@@ -41,13 +63,6 @@ function fetchWeather(lat, lon) {
     .catch(() => {
       useMockWeather();
     });
-}
-
-// 模拟天气（定位失败时用）
-function useMockWeather() {
-  const t = 32;
-  const hum = 78;
-  showWeather(t, hum);
 }
 
 // 展示天气 + 计算脱妆风险
