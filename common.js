@@ -6,16 +6,83 @@ console.log("CORONG 蔻容 — 公共JS已加载 (气象 + 肤色映射完整版
 
 // ========== 第一部分：气象页面功能 ==========
 if (location.pathname.includes("climate.html")) {
-  getLocationAndWeather();
+  // 确保页面加载完成后再获取位置
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', getLocationAndWeather);
+  } else {
+    getLocationAndWeather();
+  }
 }
 
-// 定位 - 使用 Cloudflare 的 /cdn-cgi/trace
+// 定位 - 优先使用浏览器GPS，失败则回退到Cloudflare IP定位
 function getLocationAndWeather() {
-  // 尝试从 Cloudflare 获取地理位置
+  // 先显示加载状态
+  document.getElementById("temp").textContent = "定位中...";
+  document.getElementById("humidity").textContent = "--";
+  document.getElementById("risk").textContent = "--";
+  document.getElementById("advice").textContent = "正在获取您的位置和天气...";
+  
+  // 检查浏览器是否支持GPS定位
+  if (navigator.geolocation) {
+    console.log("正在请求GPS定位权限...");
+    
+    navigator.geolocation.getCurrentPosition(
+      // 定位成功 - 用户允许了位置权限
+      function(position) {
+        const lat = position.coords.latitude;
+        const lon = position.coords.longitude;
+        console.log(`GPS定位成功: 纬度=${lat}, 经度=${lon}`);
+        
+        // 用真实GPS坐标获取天气
+        fetchWeather(lat, lon);
+      },
+      
+      // 定位失败 - 用户拒绝、超时或其他错误
+      function(error) {
+        console.log("GPS定位失败:", error.message);
+        
+        let errorMessage = "";
+        switch(error.code) {
+          case error.PERMISSION_DENIED:
+            errorMessage = "用户拒绝了位置权限";
+            break;
+          case error.POSITION_UNAVAILABLE:
+            errorMessage = "位置信息不可用";
+            break;
+          case error.TIMEOUT:
+            errorMessage = "定位超时";
+            break;
+          default:
+            errorMessage = "未知错误";
+        }
+        console.log("错误详情:", errorMessage);
+        
+        // 定位失败时，回退到 Cloudflare IP 定位
+        document.getElementById("advice").textContent = "使用IP位置估算...";
+        fallbackToCloudflare();
+      },
+      
+      // 定位选项
+      {
+        enableHighAccuracy: true,  // 高精度模式
+        timeout: 10000,            // 10秒超时
+        maximumAge: 0              // 不缓存位置，每次都重新获取
+      }
+    );
+  } else {
+    console.log("浏览器不支持GPS定位");
+    document.getElementById("advice").textContent = "您的浏览器不支持GPS定位，使用IP位置估算...";
+    fallbackToCloudflare();
+  }
+}
+
+// 回退到 Cloudflare IP 定位
+function fallbackToCloudflare() {
   fetch('/cdn-cgi/trace')
     .then(res => res.text())
     .then(data => {
-      // 解析 trace 数据
+      console.log("Cloudflare trace数据:", data);
+      
       const lines = data.split('\n');
       const trace = {};
       lines.forEach(line => {
@@ -23,21 +90,23 @@ function getLocationAndWeather() {
         if (key && value) trace[key] = value;
       });
       
-      console.log('Cloudflare 位置信息:', trace);
+      console.log("解析后的位置数据:", trace);
       
-      // 从 loc 字段获取经纬度 (格式: "lat,lon")
       let lat, lon;
       
+      // 从 loc 字段获取经纬度 (格式: "lat,lon")
       if (trace.loc && trace.loc.includes(',')) {
         const parts = trace.loc.split(',');
-        lat = parts[0];
-        lon = parts[1];
-        console.log(`使用 Cloudflare 定位: ${lat}, ${lon}`);
+        lat = parseFloat(parts[0]);
+        lon = parseFloat(parts[1]);
+        console.log(`使用 Cloudflare IP定位: ${lat}, ${lon}`);
+        document.getElementById("advice").textContent = "基于IP位置的估算结果（非精准GPS）";
       } else {
         // 如果没有获取到，使用默认曼谷
         lat = 13.7563;
         lon = 100.5018;
         console.log('使用默认位置: 曼谷');
+        document.getElementById("advice").textContent = "无法获取位置，显示曼谷参考数据";
       }
       
       // 获取天气
@@ -45,23 +114,8 @@ function getLocationAndWeather() {
     })
     .catch(err => {
       console.log('获取 Cloudflare 位置失败，使用默认曼谷', err);
+      document.getElementById("advice").textContent = "网络错误，显示曼谷参考数据";
       fetchWeather(13.7563, 100.5018); // 曼谷
-    });
-}
-
-// 获取真实天气
-function fetchWeather(lat, lon) {
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=Asia/Bangkok`;
-
-  fetch(url)
-    .then(res => res.json())
-    .then(data => {
-      const t = data.current.temperature_2m;
-      const hum = data.current.relative_humidity_2m;
-      showWeather(t, hum);
-    })
-    .catch(() => {
-      useMockWeather();
     });
 }
 
