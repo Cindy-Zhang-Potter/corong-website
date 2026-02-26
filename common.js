@@ -372,60 +372,8 @@ function setSkinLevel(level) {
 
 // ========== 第三部分：页脚固定功能 ==========
 
-document.addEventListener('DOMContentLoaded', function() {
-  fixFooterPosition();
-  window.addEventListener('resize', fixFooterPosition);
   
   // 在肤色页面自动初始化
   if (document.querySelector('.skin')) {
     initSkinMapping();
   }
-});
-
-function fixFooterPosition() {
-  const styleId = 'footer-fix-style';
-  let styleTag = document.getElementById(styleId);
-  
-  if (!styleTag) {
-    styleTag = document.createElement('style');
-    styleTag.id = styleId;
-    document.head.appendChild(styleTag);
-  }
-  
-  styleTag.textContent = `
-    html, body {
-      height: 100%;
-      margin: 0;
-      padding: 0;
-    }
-    body {
-      display: flex;
-      flex-direction: column;
-      min-height: 100vh;
-    }
-    .header {
-      flex-shrink: 0;
-    }
-    .container {
-      flex: 1 0 auto;
-      padding-bottom: 20px;
-    }
-    .footer {
-      flex-shrink: 0;
-      width: 100%;
-      background: #000;
-      padding: 26px 20px;
-      text-align: center;
-      margin-top: auto;
-    }
-  `;
-  
-  const footer = document.querySelector('.footer');
-  if (footer) {
-    footer.style.marginTop = 'auto';
-  }
-}
-
-window.addEventListener('load', function() {
-  fixFooterPosition();
-});
