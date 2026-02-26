@@ -5,17 +5,15 @@
 console.log("CORONG 蔻容 — 公共JS已加载 (气象 + 肤色映射完整版)");
 
 // ========== 第一部分：气象页面功能 ==========
+// 不再自动执行定位，改为由按钮触发
 if (location.pathname.includes("climate.html")) {
-  // 确保页面加载完成后再获取位置
-  if (document.readyState === 'loading') {
-    document.addEventListener('DOMContentLoaded', getLocationAndWeather);
-  } else {
-    getLocationAndWeather();
-  }
+  console.log("气象页面已加载，等待用户点击定位按钮");
 }
 
 // 定位 - 优先使用浏览器GPS，失败则回退到Cloudflare IP定位
 function getLocationAndWeather() {
+  console.log("开始执行定位...");
+  
   // 先显示加载状态
   const tempEl = document.getElementById("temp");
   const humidityEl = document.getElementById("humidity");
@@ -25,6 +23,7 @@ function getLocationAndWeather() {
   // 防错：检查元素是否存在
   if (!tempEl || !humidityEl || !riskEl || !adviceEl) {
     console.error("气象页面缺少必要的显示元素");
+    alert("页面元素加载异常，请刷新后重试");
     return;
   }
 
@@ -52,31 +51,34 @@ function getLocationAndWeather() {
       function(error) {
         console.log("GPS定位失败:", error.message);
         
-        let errorMessage = "";
+        let userMessage = "";
         switch(error.code) {
           case error.PERMISSION_DENIED:
-            errorMessage = "用户拒绝了位置权限";
+            userMessage = "请点击允许位置权限";
+            adviceEl.textContent = "需要位置权限才能获取精准天气";
             break;
           case error.POSITION_UNAVAILABLE:
-            errorMessage = "位置信息不可用";
+            userMessage = "位置信号弱";
+            adviceEl.textContent = "GPS信号弱，使用IP位置估算";
+            fallbackToCloudflare();
             break;
           case error.TIMEOUT:
-            errorMessage = "定位超时";
+            userMessage = "定位超时";
+            adviceEl.textContent = "定位超时，使用IP位置估算";
+            fallbackToCloudflare();
             break;
           default:
-            errorMessage = "未知错误";
+            userMessage = "未知错误";
+            adviceEl.textContent = "定位失败，使用IP位置估算";
+            fallbackToCloudflare();
         }
-        console.log("错误详情:", errorMessage);
-        
-        // 定位失败时，回退到 Cloudflare IP 定位
-        adviceEl.textContent = "使用IP位置估算...";
-        fallbackToCloudflare();
+        console.log("错误详情:", userMessage);
       },
       
       // 定位选项
       {
         enableHighAccuracy: true,  // 高精度模式
-        timeout: 10000,            // 10秒超时
+        timeout: 15000,            // 15秒超时（增加时间）
         maximumAge: 0              // 不缓存位置，每次都重新获取
       }
     );
@@ -130,65 +132,53 @@ function fallbackToCloudflare() {
     });
 }
 
-// 核心补充：获取天气数据（使用免费的Open-Meteo API，无需密钥）
+// 获取真实天气
 function fetchWeather(lat, lon) {
   console.log(`正在获取 ${lat}, ${lon} 的天气数据`);
   
-  // 修正：使用正确的API参数获取温度和湿度（指定时区+明确字段）
-  const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=Asia/Bangkok`;
-  
-  fetch(apiUrl)
-    .then(response => {
-      if (!response.ok) {
-        throw new Error(`API请求失败: ${response.status}`);
+  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=Asia/Bangkok`;
+
+  fetch(url)
+    .then(res => {
+      if (!res.ok) {
+        throw new Error(`API请求失败: ${res.status}`);
       }
-      return response.json();
+      return res.json();
     })
     .then(data => {
-      console.log("天气API返回数据:", data);
+      console.log("天气数据:", data);
       
-      // 从current字段提取数据（增加数据存在性判断）
       if (data.current && typeof data.current.temperature_2m === 'number' && typeof data.current.relative_humidity_2m === 'number') {
         const temperature = data.current.temperature_2m;
         const humidity = data.current.relative_humidity_2m;
         
-        console.log(`获取到数据: 温度=${temperature}℃, 湿度=${humidity}%`);
+        console.log(`温度=${temperature}℃, 湿度=${humidity}%`);
         showWeather(temperature, humidity);
       } else {
-        // 如果数据格式不对/字段缺失，使用默认值
-        console.warn("API返回数据不完整，使用默认值");
-        showWeather(28, 65);
-        const adviceEl = document.getElementById("advice");
-        if (adviceEl) {
-          adviceEl.textContent = "天气数据不完整，显示参考数据";
-        }
+        console.warn("API返回数据不完整");
+        useMockWeather();
       }
     })
     .catch(error => {
-      console.error("获取天气数据失败:", error);
-      // 失败时使用默认测试数据，保证页面不空白
-      showWeather(28, 65);
-      const adviceEl = document.getElementById("advice");
-      if (adviceEl) {
-        adviceEl.textContent = "天气数据获取失败，显示参考数据";
-      }
+      console.error("获取天气失败:", error);
+      useMockWeather();
     });
 }
 
-// 调试专用：模拟天气数据（方便测试，无需依赖API）
+// 模拟天气数据（API失败时使用）
 function useMockWeather() {
   console.log("使用模拟天气数据");
   showWeather(28, 65);
+  document.getElementById("advice").textContent = "使用模拟数据（API暂时不可用）";
 }
 
 // 展示天气 + 计算脱妆风险
 function showWeather(temp, humidity) {
-  // 防错：检查元素是否存在
   const tempEl = document.getElementById("temp");
   const humidityEl = document.getElementById("humidity");
   const riskEl = document.getElementById("risk");
   const adviceEl = document.getElementById("advice");
-  
+
   if (!tempEl || !humidityEl || !riskEl || !adviceEl) return;
 
   const risk = calculateRisk(temp, humidity);
@@ -366,50 +356,39 @@ const skinNameMap = {
 
 // 初始化肤色映射（在AI肤色页面调用）
 function initSkinMapping() {
-  // 检查当前页面是否有肤色选择器
   const skinElements = document.querySelectorAll('.skin');
-  if (skinElements.length === 0) return; // 不是肤色页面，跳过
+  if (skinElements.length === 0) return;
   
-  // 从localStorage读取保存的肤色
   const savedLevel = localStorage.getItem('skinLevel');
   
-  // 如果有保存的肤色，自动选中并显示推荐
   if (savedLevel) {
-    // 移除所有active类
     skinElements.forEach(dot => {
       dot.classList.remove('active');
     });
     
-    // 给对应肤色添加active类
     skinElements.forEach(dot => {
       if (dot.dataset.level === savedLevel) {
         dot.classList.add('active');
       }
     });
     
-    // 渲染推荐产品
     renderSkinResult(savedLevel);
   }
 }
 
 // 渲染肤色结果和产品推荐
 function renderSkinResult(level) {
-  // 获取显示元素
   const resultDiv = document.getElementById('skin-result');
   const foundationSpan = document.getElementById('foundation');
   const primerSpan = document.getElementById('primer');
   const powderSpan = document.getElementById('powder');
   
-  // 如果页面没有这些元素，说明不在肤色页面
   if (!resultDiv || !foundationSpan || !primerSpan || !powderSpan) return;
   
-  // 获取肤色名称
   const skinName = skinNameMap[level] || "未知肤色";
   
-  // 更新显示
   resultDiv.textContent = `✨ 已选择：${level}号 · ${skinName} ✨`;
   
-  // 获取产品推荐
   const products = skinProductMap[level];
   if (products) {
     foundationSpan.textContent = products.foundation;
@@ -421,15 +400,13 @@ function renderSkinResult(level) {
     powderSpan.textContent = "--";
   }
   
-  // 保存到localStorage
   localStorage.setItem('skinLevel', level);
 }
 
-// 手动设置肤色的函数（可由点击事件调用）
+// 手动设置肤色的函数
 function setSkinLevel(level) {
   renderSkinResult(level);
   
-  // 更新所有圆点的active状态
   const skinElements = document.querySelectorAll('.skin');
   skinElements.forEach(dot => {
     if (dot.dataset.level == level) {
@@ -440,15 +417,61 @@ function setSkinLevel(level) {
   });
 }
 
-// ========== 初始化逻辑优化 ==========
-// 统一的页面初始化入口（避免重复代码）
+// ========== 第三部分：页脚固定功能 ==========
 document.addEventListener('DOMContentLoaded', function() {
-  // 初始化肤色映射（仅在肤色页面）
+  fixFooterPosition();
+  window.addEventListener('resize', fixFooterPosition);
+  
+  // 在肤色页面自动初始化
   if (document.querySelector('.skin')) {
-    // 防错：确保函数存在
-    if (typeof initSkinMapping === 'function') {
-      initSkinMapping();
-      console.log("肤色映射功能已初始化");
-    }
+    initSkinMapping();
   }
+});
+
+function fixFooterPosition() {
+  const styleId = 'footer-fix-style';
+  let styleTag = document.getElementById(styleId);
+  
+  if (!styleTag) {
+    styleTag = document.createElement('style');
+    styleTag.id = styleId;
+    document.head.appendChild(styleTag);
+  }
+  
+  styleTag.textContent = `
+    html, body {
+      height: 100%;
+      margin: 0;
+      padding: 0;
+    }
+    body {
+      display: flex;
+      flex-direction: column;
+      min-height: 100vh;
+    }
+    .header {
+      flex-shrink: 0;
+    }
+    .container {
+      flex: 1 0 auto;
+      padding-bottom: 20px;
+    }
+    .footer {
+      flex-shrink: 0;
+      width: 100%;
+      background: #000;
+      padding: 26px 20px;
+      text-align: center;
+      margin-top: auto;
+    }
+  `;
+  
+  const footer = document.querySelector('.footer');
+  if (footer) {
+    footer.style.marginTop = 'auto';
+  }
+}
+
+window.addEventListener('load', function() {
+  fixFooterPosition();
 });

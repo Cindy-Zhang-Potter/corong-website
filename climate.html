@@ -5,6 +5,57 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>气象化妆间 - CORONG 蔻容</title>
 <link rel="stylesheet" href="style.css">
+<style>
+/* 按钮样式 - 直接内嵌确保生效 */
+.weather-card {
+  text-align: left;
+  padding: 25px;
+}
+
+.location-btn {
+  background-color: #000;
+  color: #fff;
+  border: none;
+  padding: 14px 20px;
+  width: 100%;
+  border-radius: 40px;
+  font-size: 16px;
+  font-weight: 500;
+  margin-bottom: 25px;
+  cursor: pointer;
+  transition: background-color 0.3s;
+  box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+  letter-spacing: 0.5px;
+}
+
+.location-btn:hover {
+  background-color: #333;
+}
+
+.location-btn:active {
+  transform: scale(0.98);
+}
+
+.weather-card p {
+  margin: 12px 0;
+  font-size: 16px;
+  line-height: 1.6;
+}
+
+.weather-card p span {
+  font-weight: 600;
+  color: #000;
+}
+
+#advice {
+  background-color: #f9f5f0;
+  padding: 15px;
+  border-radius: 12px;
+  margin-top: 20px;
+  font-size: 15px;
+  border-left: 4px solid #000;
+}
+</style>
 </head>
 <body>
 
@@ -22,10 +73,15 @@
 <div class="container">
   <h2 class="page-title">气象化妆间</h2>
   <div class="card weather-card">
+    <!-- 新增的定位按钮 -->
+    <button class="location-btn" id="getLocationBtn">
+      📍 点击获取我的位置和天气
+    </button>
+    
     <p>温度：<span id="temp">--</span></p>
     <p>湿度：<span id="humidity">--</span></p>
     <p>脱妆风险指数：<span id="risk">--</span></p>
-    <p id="advice" style="margin-top:14px; font-weight:bold;">--</p>
+    <p id="advice" style="margin-top:14px; font-weight:bold;">点击上方按钮开始定位</p>
   </div>
 </div>
 
