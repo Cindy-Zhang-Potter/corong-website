@@ -17,10 +17,21 @@ if (location.pathname.includes("climate.html")) {
 // 定位 - 优先使用浏览器GPS，失败则回退到Cloudflare IP定位
 function getLocationAndWeather() {
   // 先显示加载状态
-  document.getElementById("temp").textContent = "定位中...";
-  document.getElementById("humidity").textContent = "--";
-  document.getElementById("risk").textContent = "--";
-  document.getElementById("advice").textContent = "正在获取您的位置和天气...";
+  const tempEl = document.getElementById("temp");
+  const humidityEl = document.getElementById("humidity");
+  const riskEl = document.getElementById("risk");
+  const adviceEl = document.getElementById("advice");
+  
+  // 防错：检查元素是否存在
+  if (!tempEl || !humidityEl || !riskEl || !adviceEl) {
+    console.error("气象页面缺少必要的显示元素");
+    return;
+  }
+
+  tempEl.textContent = "定位中...";
+  humidityEl.textContent = "--";
+  riskEl.textContent = "--";
+  adviceEl.textContent = "正在获取您的位置和天气...";
   
   // 检查浏览器是否支持GPS定位
   if (navigator.geolocation) {
@@ -58,7 +69,7 @@ function getLocationAndWeather() {
         console.log("错误详情:", errorMessage);
         
         // 定位失败时，回退到 Cloudflare IP 定位
-        document.getElementById("advice").textContent = "使用IP位置估算...";
+        adviceEl.textContent = "使用IP位置估算...";
         fallbackToCloudflare();
       },
       
@@ -71,7 +82,7 @@ function getLocationAndWeather() {
     );
   } else {
     console.log("浏览器不支持GPS定位");
-    document.getElementById("advice").textContent = "您的浏览器不支持GPS定位，使用IP位置估算...";
+    adviceEl.textContent = "您的浏览器不支持GPS定位，使用IP位置估算...";
     fallbackToCloudflare();
   }
 }
@@ -119,15 +130,74 @@ function fallbackToCloudflare() {
     });
 }
 
+// 核心补充：获取天气数据（使用免费的Open-Meteo API，无需密钥）
+function fetchWeather(lat, lon) {
+  console.log(`正在获取 ${lat}, ${lon} 的天气数据`);
+  
+  // 修正：使用正确的API参数获取温度和湿度（指定时区+明确字段）
+  const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=Asia/Bangkok`;
+  
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`API请求失败: ${response.status}`);
+      }
+      return response.json();
+    })
+    .then(data => {
+      console.log("天气API返回数据:", data);
+      
+      // 从current字段提取数据（增加数据存在性判断）
+      if (data.current && typeof data.current.temperature_2m === 'number' && typeof data.current.relative_humidity_2m === 'number') {
+        const temperature = data.current.temperature_2m;
+        const humidity = data.current.relative_humidity_2m;
+        
+        console.log(`获取到数据: 温度=${temperature}℃, 湿度=${humidity}%`);
+        showWeather(temperature, humidity);
+      } else {
+        // 如果数据格式不对/字段缺失，使用默认值
+        console.warn("API返回数据不完整，使用默认值");
+        showWeather(28, 65);
+        const adviceEl = document.getElementById("advice");
+        if (adviceEl) {
+          adviceEl.textContent = "天气数据不完整，显示参考数据";
+        }
+      }
+    })
+    .catch(error => {
+      console.error("获取天气数据失败:", error);
+      // 失败时使用默认测试数据，保证页面不空白
+      showWeather(28, 65);
+      const adviceEl = document.getElementById("advice");
+      if (adviceEl) {
+        adviceEl.textContent = "天气数据获取失败，显示参考数据";
+      }
+    });
+}
+
+// 调试专用：模拟天气数据（方便测试，无需依赖API）
+function useMockWeather() {
+  console.log("使用模拟天气数据");
+  showWeather(28, 65);
+}
+
 // 展示天气 + 计算脱妆风险
 function showWeather(temp, humidity) {
+  // 防错：检查元素是否存在
+  const tempEl = document.getElementById("temp");
+  const humidityEl = document.getElementById("humidity");
+  const riskEl = document.getElementById("risk");
+  const adviceEl = document.getElementById("advice");
+  
+  if (!tempEl || !humidityEl || !riskEl || !adviceEl) return;
+
   const risk = calculateRisk(temp, humidity);
   const advice = getAdvice(temp, humidity);
 
-  document.getElementById("temp").textContent = temp + " ℃";
-  document.getElementById("humidity").textContent = humidity + " %";
-  document.getElementById("risk").textContent = risk;
-  document.getElementById("advice").textContent = advice;
+  tempEl.textContent = temp + " ℃";
+  humidityEl.textContent = humidity + " %";
+  riskEl.textContent = risk;
+  adviceEl.textContent = advice;
 }
 
 // 脱妆风险算法
@@ -370,10 +440,15 @@ function setSkinLevel(level) {
   });
 }
 
-// ========== 第三部分：页脚固定功能 ==========
-
-  
-  // 在肤色页面自动初始化
+// ========== 初始化逻辑优化 ==========
+// 统一的页面初始化入口（避免重复代码）
+document.addEventListener('DOMContentLoaded', function() {
+  // 初始化肤色映射（仅在肤色页面）
   if (document.querySelector('.skin')) {
-    initSkinMapping();
+    // 防错：确保函数存在
+    if (typeof initSkinMapping === 'function') {
+      initSkinMapping();
+      console.log("肤色映射功能已初始化");
+    }
   }
+});
