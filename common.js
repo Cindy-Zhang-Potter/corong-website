@@ -57,6 +57,18 @@ function getLocationAndWeather() {
     fallbackToCloudflare();
   }
 }
+// ========== 确保按钮可以触发定位 ==========
+(function() {
+    // 方式1：通过ID绑定
+    const btn = document.getElementById('getLocationBtn');
+    if (btn) {
+        btn.addEventListener('click', getLocationAndWeather);
+        console.log("✅ 按钮已绑定");
+    }
+    
+    // 方式2：全局暴露函数，支持onclick属性
+    window.getLocationAndWeather = getLocationAndWeather;
+})();
 
 // 回退到 Cloudflare IP 定位
 function fallbackToCloudflare() {
