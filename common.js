@@ -5,25 +5,23 @@
 console.log("CORONG 蔻容 — 公共JS已加载 (气象 + 肤色映射完整版)");
 
 // ========== 第一部分：气象页面功能 ==========
-// 不再自动执行定位，改为由按钮触发
 if (location.pathname.includes("climate.html")) {
-  console.log("气象页面已加载，等待用户点击定位按钮");
+  if (document.readyState === 'loading') {
+    document.addEventListener('DOMContentLoaded', getLocationAndWeather);
+  } else {
+    getLocationAndWeather();
+  }
 }
 
 // 定位 - 优先使用浏览器GPS，失败则回退到Cloudflare IP定位
 function getLocationAndWeather() {
-  console.log("开始执行定位...");
-  
-  // 先显示加载状态
   const tempEl = document.getElementById("temp");
   const humidityEl = document.getElementById("humidity");
   const riskEl = document.getElementById("risk");
   const adviceEl = document.getElementById("advice");
   
-  // 防错：检查元素是否存在
   if (!tempEl || !humidityEl || !riskEl || !adviceEl) {
     console.error("气象页面缺少必要的显示元素");
-    alert("页面元素加载异常，请刷新后重试");
     return;
   }
 
@@ -32,54 +30,25 @@ function getLocationAndWeather() {
   riskEl.textContent = "--";
   adviceEl.textContent = "正在获取您的位置和天气...";
   
-  // 检查浏览器是否支持GPS定位
   if (navigator.geolocation) {
     console.log("正在请求GPS定位权限...");
     
     navigator.geolocation.getCurrentPosition(
-      // 定位成功 - 用户允许了位置权限
       function(position) {
         const lat = position.coords.latitude;
         const lon = position.coords.longitude;
         console.log(`GPS定位成功: 纬度=${lat}, 经度=${lon}`);
-        
-        // 用真实GPS坐标获取天气
         fetchWeather(lat, lon);
       },
-      
-      // 定位失败 - 用户拒绝、超时或其他错误
       function(error) {
         console.log("GPS定位失败:", error.message);
-        
-        let userMessage = "";
-        switch(error.code) {
-          case error.PERMISSION_DENIED:
-            userMessage = "请点击允许位置权限";
-            adviceEl.textContent = "需要位置权限才能获取精准天气";
-            break;
-          case error.POSITION_UNAVAILABLE:
-            userMessage = "位置信号弱";
-            adviceEl.textContent = "GPS信号弱，使用IP位置估算";
-            fallbackToCloudflare();
-            break;
-          case error.TIMEOUT:
-            userMessage = "定位超时";
-            adviceEl.textContent = "定位超时，使用IP位置估算";
-            fallbackToCloudflare();
-            break;
-          default:
-            userMessage = "未知错误";
-            adviceEl.textContent = "定位失败，使用IP位置估算";
-            fallbackToCloudflare();
-        }
-        console.log("错误详情:", userMessage);
+        adviceEl.textContent = "使用IP位置估算...";
+        fallbackToCloudflare();
       },
-      
-      // 定位选项
       {
-        enableHighAccuracy: true,  // 高精度模式
-        timeout: 15000,            // 15秒超时（增加时间）
-        maximumAge: 0              // 不缓存位置，每次都重新获取
+        enableHighAccuracy: true,
+        timeout: 10000,
+        maximumAge: 0
       }
     );
   } else {
@@ -94,8 +63,6 @@ function fallbackToCloudflare() {
   fetch('/cdn-cgi/trace')
     .then(res => res.text())
     .then(data => {
-      console.log("Cloudflare trace数据:", data);
-      
       const lines = data.split('\n');
       const trace = {};
       lines.forEach(line => {
@@ -103,11 +70,8 @@ function fallbackToCloudflare() {
         if (key && value) trace[key] = value;
       });
       
-      console.log("解析后的位置数据:", trace);
-      
       let lat, lon;
       
-      // 从 loc 字段获取经纬度 (格式: "lat,lon")
       if (trace.loc && trace.loc.includes(',')) {
         const parts = trace.loc.split(',');
         lat = parseFloat(parts[0]);
@@ -115,61 +79,53 @@ function fallbackToCloudflare() {
         console.log(`使用 Cloudflare IP定位: ${lat}, ${lon}`);
         document.getElementById("advice").textContent = "基于IP位置的估算结果（非精准GPS）";
       } else {
-        // 如果没有获取到，使用默认曼谷
         lat = 13.7563;
         lon = 100.5018;
         console.log('使用默认位置: 曼谷');
         document.getElementById("advice").textContent = "无法获取位置，显示曼谷参考数据";
       }
       
-      // 获取天气
       fetchWeather(lat, lon);
     })
     .catch(err => {
       console.log('获取 Cloudflare 位置失败，使用默认曼谷', err);
       document.getElementById("advice").textContent = "网络错误，显示曼谷参考数据";
-      fetchWeather(13.7563, 100.5018); // 曼谷
+      fetchWeather(13.7563, 100.5018);
     });
 }
 
-// 获取真实天气
+// ✅【修复版】获取天气数据
 function fetchWeather(lat, lon) {
   console.log(`正在获取 ${lat}, ${lon} 的天气数据`);
   
-  const url = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=Asia/Bangkok`;
-
-  fetch(url)
-    .then(res => {
-      if (!res.ok) {
-        throw new Error(`API请求失败: ${res.status}`);
+  const apiUrl = `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m&timezone=Asia/Bangkok`;
+  
+  fetch(apiUrl)
+    .then(response => {
+      if (!response.ok) {
+        throw new Error(`API请求失败: ${response.status}`);
       }
-      return res.json();
+      return response.json();
     })
     .then(data => {
-      console.log("天气数据:", data);
+      console.log("天气API返回数据:", data);
       
-      if (data.current && typeof data.current.temperature_2m === 'number' && typeof data.current.relative_humidity_2m === 'number') {
+      if (data && data.current) {
         const temperature = data.current.temperature_2m;
         const humidity = data.current.relative_humidity_2m;
         
-        console.log(`温度=${temperature}℃, 湿度=${humidity}%`);
+        console.log(`获取到数据: 温度=${temperature}℃, 湿度=${humidity}%`);
         showWeather(temperature, humidity);
       } else {
-        console.warn("API返回数据不完整");
-        useMockWeather();
+        console.log("API返回格式不对，使用默认值");
+        showWeather(28, 65);
       }
     })
     .catch(error => {
-      console.error("获取天气失败:", error);
-      useMockWeather();
+      console.error("获取天气数据失败:", error);
+      showWeather(28, 65);
+      document.getElementById("advice").textContent = "天气数据获取失败，显示参考数据";
     });
-}
-
-// 模拟天气数据（API失败时使用）
-function useMockWeather() {
-  console.log("使用模拟天气数据");
-  showWeather(28, 65);
-  document.getElementById("advice").textContent = "使用模拟数据（API暂时不可用）";
 }
 
 // 展示天气 + 计算脱妆风险
@@ -178,7 +134,7 @@ function showWeather(temp, humidity) {
   const humidityEl = document.getElementById("humidity");
   const riskEl = document.getElementById("risk");
   const adviceEl = document.getElementById("advice");
-
+  
   if (!tempEl || !humidityEl || !riskEl || !adviceEl) return;
 
   const risk = calculateRisk(temp, humidity);
