@@ -18,6 +18,9 @@ body {
   display: flex;
   flex-direction: column;
   min-height: 100vh;
+  background: #fff6f9; /* 保持原有背景色 */
+  /* 或者如果要保留纹理，使用： */
+  /* background: #fff6f9 url("data:image/svg+xml,...") repeat; */
 }
 
 /* 顶部导航 - 基础样式 */

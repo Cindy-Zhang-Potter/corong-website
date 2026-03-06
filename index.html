@@ -7,7 +7,7 @@
 <link rel="stylesheet" href="style.css">
 </head>
 <body>
-
+  
 <div class="header">
   <div class="logo">CORONG 蔻容</div>
   <div class="nav">
@@ -19,22 +19,412 @@
   </div>
 </div>
 
-<div class="container">
-  <h1 class="page-title">CORONG 蔻容</h1>
-  <div style="text-align:center; margin-bottom:30px;">
-    <p>泰国气候智能持妆解决方案 · 专为东南亚湿热环境研发</p>
-  </div>
+<style>
+    /* 基础重置 - 新增，解决默认样式冲突 */
+  * {
+    margin: 0;
+    padding: 0;
+    box-sizing: border-box;
+    font-family: "Microsoft Yahei", Arial, sans-serif;
+  }
 
-  <div style="text-align:center;">
-    <a href="climate.html" class="btn">气象化妆间</a>
-    <a href="ugc.html" class="btn">UGC持妆照片流</a>
-    <a href="ai-skin.html" class="btn">AI肤色映射</a>
-    <a href="science.html" class="btn">科学透明化中心</a>
-  </div>
 
-  <div style="text-align:center; margin-top:30px;">
-    <a href="#" class="btn btn-tiktok">TikTok AR 试色</a>
-    <a href="#" class="btn btn-shopee">Shopee 购买</a>
+  /* 主视觉区 - 新增品牌氛围区 */
+  .hero-section {
+    padding: 80px 0 60px;
+    text-align: center;
+    margin-bottom: 40px;
+    position: relative;
+    overflow: hidden;
+  }
+  .hero-section::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    right: 0;
+    width: 40%;
+    height: 100%;
+    z-index: 0;
+  }
+  .hero-container {
+    max-width: 1200px;
+    margin: 0 auto;
+    padding: 0 20px;
+    position: relative;
+    z-index: 1;
+  }
+  .brand-title {
+    font-size: 56px;
+    color: #333;
+    margin-bottom: 15px;
+    letter-spacing: 3px;
+    font-weight: 700;
+    background: linear-gradient(135deg, #333 0%, #555 100%);
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1.2; /* 增加行高 */
+  }
+  .brand-slogan {
+    font-size: 20px;
+    color: #666;
+    line-height: 1.8;
+    max-width: 800px;
+    margin: 0 auto 30px;
+    font-weight: 400;
+  }
+  .divider {
+    width: 80px;
+    height: 3px;
+    background: linear-gradient(90deg, #d94a87, #e86a99);
+    margin: 0 auto 40px;
+    border-radius: 3px;
+  }
+
+  /* 功能按钮区 - 全新布局 */
+  .features-section {
+    max-width: 1200px;
+    margin: 0 auto 80px;
+    padding: 0 20px;
+  }
+  .section-title {
+    text-align: center;
+    font-size: 24px;
+    color: #444;
+    margin-bottom: 40px;
+    font-weight: 600;
+  }
+  .section-title span {
+    color: #d94a87;
+  }
+
+  /* 按钮网格布局 */
+  .btn-grid {
+    display: grid;
+    grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+    gap: 25px;
+    margin-bottom: 40px;
+  }
+  
+  /* 通用按钮样式 - 全新设计 */
+  .feature-btn {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    padding: 30px 20px;
+    background: #fff;
+    border-radius: 16px;
+    text-decoration: none;
+    color: #333;
+    box-shadow: 0 8px 24px rgba(0,0,0,0.06);
+    transition: all 0.4s ease;
+    border: 1px solid transparent;
+    position: relative;
+    overflow: hidden;
+    height: 100%;
+  }
+  .feature-btn::before {
+    content: "";
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: linear-gradient(90deg, #d94a87, #e86a99);
+    opacity: 0;
+    transition: opacity 0.3s ease;
+  }
+  .feature-btn:hover {
+    transform: translateY(-8px);
+    box-shadow: 0 12px 32px rgba(0,0,0,0.1);
+    border-color: rgba(217, 74, 135, 0.1);
+  }
+  .feature-btn:hover::before {
+    opacity: 1;
+  }
+
+  /* 按钮图标 */
+  .btn-icon {
+    width: 60px;
+    height: 60px;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    margin-bottom: 15px;
+    font-size: 24px;
+    color: #fff;
+  }
+  .icon-primary {
+    background: linear-gradient(135deg, #d94a87, #e86a99);
+  }
+  .icon-tiktok {
+    background: #000;
+  }
+  .icon-shopee {
+    background: #f53d5c;
+  }
+
+  /* 按钮文字 */
+  .btn-text {
+    font-size: 18px;
+    font-weight: 600;
+    margin-bottom: 8px;
+  }
+  .btn-desc {
+    font-size: 14px;
+    color: #888;
+    text-align: center;
+    line-height: 1.5;
+  }
+
+  /* 行动按钮组 */
+  .action-btns {
+    display: flex;
+    justify-content: center;
+    gap: 20px;
+    flex-wrap: wrap;
+  }
+  .action-btn {
+    padding: 16px 40px;
+    border-radius: 50px;
+    text-decoration: none;
+    font-size: 16px;
+    font-weight: 600;
+    cursor: pointer;
+    border: none;
+    transition: all 0.3s ease;
+    box-shadow: 0 6px 18px rgba(0,0,0,0.08);
+    display: inline-flex;
+    align-items: center;
+    gap: 10px;
+  }
+  .action-btn-tiktok {
+    background: #000;
+    color: #fff;
+  }
+  .action-btn-shopee {
+    background: #f53d5c;
+    color: #fff;
+  }
+  .action-btn:hover {
+    transform: translateY(-3px);
+    box-shadow: 0 8px 24px rgba(0,0,0,0.12);
+  }
+  
+/* ========== 基础响应式设置 ========== */
+/* 1. 视口设置（已在你的HTML头部，这里提醒确认） */
+/* <meta name="viewport" content="width=device-width, initial-scale=1.0"> */
+
+/* 2. 基础重置 - 确保不同设备样式统一 */
+* {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  /* 防止文字放大（解决iPhone横屏文字自动放大问题） */
+  -webkit-text-size-adjust: 100%;
+  text-size-adjust: 100%;
+}
+
+/* ========== 媒体查询 - 按屏幕尺寸适配 ========== */
+/* 1. 超小屏（手机竖屏，≤576px）- 核心移动端适配 */
+@media (max-width: 576px) {
+  /* 页眉适配 */
+  .header {
+    padding: 15px 10px !important;
+    flex-direction: column !important;
+    text-align: center !important;
+  }
+  .header .logo {
+    font-size: 24px !important;
+    margin-bottom: 10px !important;
+  }
+  .header .nav {
+    width: 100% !important;
+    justify-content: center !important;
+    flex-wrap: wrap !important;
+  }
+  .header .nav a {
+    margin: 5px 8px !important;
+    font-size: 14px !important;
+  }
+
+  /* 主视觉区适配 */
+  .hero-section {
+    padding: 40px 0 30px !important;
+  }
+  .brand-title {
+    font-size: 32px !important;
+    letter-spacing: 1px !important;
+  }
+  .brand-slogan {
+    font-size: 16px !important;
+    padding: 0 10px !important;
+    line-height: 1.6 !important;
+  }
+  .divider {
+    width: 60px !important;
+    margin-bottom: 20px !important;
+  }
+
+  /* 功能区适配 */
+  .features-section {
+    padding: 0 10px !important;
+    margin-bottom: 40px !important;
+  }
+  .section-title {
+    font-size: 20px !important;
+    margin-bottom: 25px !important;
+  }
+  .btn-grid {
+    grid-template-columns: 1fr !important; /* 单列显示 */
+    gap: 15px !important;
+  }
+  .feature-btn {
+    padding: 20px 15px !important;
+  }
+  .btn-icon {
+    width: 50px !important;
+    height: 50px !important;
+    font-size: 20px !important;
+  }
+  .btn-text {
+    font-size: 16px !important;
+  }
+  .btn-desc {
+    font-size: 13px !important;
+  }
+
+  /* 行动按钮适配 */
+  .action-btns {
+    flex-direction: column !important; /* 按钮垂直排列 */
+    padding: 0 10px !important;
+    gap: 10px !important;
+  }
+  .action-btn {
+    width: 100% !important;
+    padding: 14px 20px !important;
+    font-size: 15px !important;
+    justify-content: center !important;
+  }
+
+  /* 页脚适配 */
+  .footer {
+    padding: 20px 10px !important;
+    font-size: 12px !important;
+  }
+}
+
+/* 2. 小屏（手机横屏/小平板，576px-768px） */
+@media (min-width: 577px) and (max-width: 768px) {
+  .header {
+    padding: 20px 15px !important;
+  }
+  .header .nav a {
+    margin-left: 15px !important;
+  }
+  .brand-title {
+    font-size: 40px !important;
+  }
+  .btn-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* 双列显示 */
+  }
+  .action-btns {
+    flex-wrap: wrap !important;
+  }
+  .action-btn {
+    width: 45% !important;
+    min-width: 180px !important;
+  }
+}
+
+/* 3. 中屏（平板，768px-992px） */
+@media (min-width: 769px) and (max-width: 992px) {
+  .btn-grid {
+    grid-template-columns: repeat(2, 1fr) !important; /* 双列显示 */
+    gap: 20px !important;
+  }
+  .brand-title {
+    font-size: 48px !important;
+  }
+}
+
+/* 4. 大屏（电脑，≥992px）- 保持原有样式 */
+@media (min-width: 993px) {
+  .btn-grid {
+    grid-template-columns: repeat(4, 1fr) !important; /* 四列显示 */
+  }
+}
+
+/* ========== 额外适配优化 ========== */
+/* 1. 触摸反馈优化（移动端点击按钮更友好） */
+@media (max-width: 768px) {
+  a, button, .feature-btn, .action-btn {
+    -webkit-tap-highlight-color: transparent; /* 去除iOS点击高亮 */
+  }
+}
+
+/* 2. 横屏适配（解决手机横屏时布局错乱） */
+@media (orientation: landscape) and (max-width: 768px) {
+  .hero-section {
+    padding: 30px 0 20px !important;
+  }
+  .brand-title {
+    font-size: 28px !important;
+  }
+  .btn-grid {
+    grid-template-columns: repeat(2, 1fr) !important;
+  }
+}
+
+</style>
+
+<!-- 主视觉区 - 新增品牌氛围区 -->
+<div class="hero-section">
+  <div class="hero-container">
+    <h1 class="brand-title">CORONG 蔻容</h1>
+    <p class="brand-slogan">泰国气候智能持妆解决方案 · 专为东南亚湿热环境研发，打造持久不脱妆的完美妆容</p>
+    <div class="divider"></div>
+  </div>
+</div>
+
+<!-- 功能按钮区 - 全新布局 -->
+<div class="features-section">
+  <h2 class="section-title">探索 <span>蔻容</span> 核心功能</h2>
+  
+  <!-- 核心功能按钮网格 -->
+  <div class="btn-grid">
+    <a href="climate.html" class="feature-btn">
+      <div class="btn-icon icon-primary">🌤️</div>
+      <div class="btn-text">气象化妆间</div>
+      <div class="btn-desc">根据实时气候数据，智能推荐适合的妆容方案</div>
+    </a>
+    <a href="ugc.html" class="feature-btn">
+      <div class="btn-icon icon-primary">📸</div>
+      <div class="btn-text">UGC持妆照片流</div>
+      <div class="btn-desc">查看真实用户的持妆效果，参考不同场景的妆容</div>
+    </a>
+    <a href="ai-skin.html" class="feature-btn">
+      <div class="btn-icon icon-primary">🤖</div>
+      <div class="btn-text">AI肤色映射</div>
+      <div class="btn-desc">AI智能分析你的肤色，精准匹配最适合的美妆产品</div>
+    </a>
+    <a href="science.html" class="feature-btn">
+      <div class="btn-icon icon-primary">🔬</div>
+      <div class="btn-text">科学透明化中心</div>
+      <div class="btn-desc">了解产品成分与持妆科技，科学护肤化妆</div>
+    </a>
+  </div>
+  
+  <!-- 行动按钮组 -->
+  <div class="action-btns">
+    <a href="#" class="action-btn action-btn-tiktok">
+      <span>🎵</span> TikTok AR 试色
+    </a>
+    <a href="#" class="action-btn action-btn-shopee">
+      <span>🛒</span> Shopee 购买
+    </a>
   </div>
 </div>
 
