@@ -1,0 +1,58 @@
+<!DOCTYPE html>
+<html lang="zh-CN">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>AR 实时试色 - CORONG 蔻容</title>
+<link rel="stylesheet" href="style.css">
+</head>
+<body>
+
+<!-- 顶部导航（只保留正常跳转，无多余） -->
+<div class="header">
+  <div class="logo">CORONG 蔻容</div>
+  <div class="nav">
+    <a href="index.html">首页</a>
+    <a href="climate.html">气象化妆间</a>
+    <a href="ugc.html">UGC照片流</a>
+    <a href="ar-test.html">AR试色</a>
+    <a href="science.html">科学中心</a>
+  </div>
+</div>
+
+<!-- 内容：纯 AR 试色 -->
+<div class="container">
+  <h2 class="page-title">AR 实时试色</h2>
+
+  <div style="text-align:center; margin-bottom:30px;">
+    <button class="btn" onclick="startAR()">开启摄像头试色</button>
+    <a href="ai-skin.html" class="btn">返回肤色映射</a>
+  </div>
+
+  <!-- 极简展示 -->
+  <div class="card" style="text-align:center;">
+    <h3>📷 实时 AR 试色</h3>
+    <img src="images/3a5adaa16e08cca66c69ad734adccf5d.jpg" style="width:100%; max-width:400px; border-radius:12px; margin-top:15px;">
+    <p style="margin-top:15px;">
+    
+      打开摄像头，一键试戴全色号粉底液<br>
+      智能贴合东南亚肤色，高温持妆不脱妆
+    </p>
+  </div>
+</div>
+
+<!-- 页脚 -->
+<div class="footer">
+  蔻容科技有限公司<br>
+  版权所有 © 2026 CORONG. All Rights Reserved.
+</div>
+
+<script>
+// AR 试色演示
+function startAR() {
+  alert("已启动 AR 试色模式\n请允许访问摄像头，即可实时试妆");
+}
+</script>
+
+</body>
+</html>

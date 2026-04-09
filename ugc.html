@@ -22,15 +22,33 @@
 <div class="container">
   <h2 class="page-title">UGC 持妆照片流</h2>
   <div style="text-align:center; margin-bottom:20px;">
-    <button class="btn">上传持妆照片 + 兰纳积分</button>
+    <input type="file" id="fileInput" accept="image/*" style="display:none;">
+    <button class="btn" onclick="document.getElementById('fileInput').click()">上传持妆照片 + 兰纳积分</button>
   </div>
-  <div class="masonry">
-    <img src="https://picsum.photos/320/440?random=1">
-    <img src="https://picsum.photos/320/440?random=2">
-    <img src="https://picsum.photos/320/440?random=3">
-    <img src="https://picsum.photos/320/440?random=4">
-    <img src="https://picsum.photos/320/440?random=5">
-    <img src="https://picsum.photos/320/440?random=6">
+  <div class="masonry" id="masonry">
+    <img src="images/1b3329a5e4abf52a57a492ffb7b06b72.jpg">
+    <p>曼谷油皮 · 高温持妆不脱妆</p>
+
+    <img src="images/5d01003bafa4f32b33be37cf6031943b.jpg">
+    <p>首尔干皮 · 水润不拔干</p>
+
+    <img src="images/5e99be02b28873a842343231475f4d4f.jpg">
+    <p>芭提雅 · 防水防汗抗盐雾</p>
+
+    <img src="images/8f7bd09f88f27222ba838eec3968f4a5.jpg">
+    <p>清迈干皮 · 抗氧化不暗沉</p>
+
+    <img src="images/163d599efbbd27b502f930f55788e6c2.jpg">
+    <p>曼谷混干 · 湿热环境超服帖</p>
+
+    <img src="images/0192e6dd3b250d924a5e3e71069246e.jpg">
+    <p>首尔混油 · 哑光控油8小时</p>
+
+    <img src="images/ba5d4a856457f00907d8d9505cff2910.jpg">
+    <p>曼谷全肤质 · 通用持妆粉底液</p>
+
+    <img src="images/d599bc5301e4b0b906569b159a0da8ed.jpg">
+    <p>清迈混干 · 水光保湿不卡粉</p>
   </div>
 </div>
 
@@ -40,5 +58,29 @@
 </div>
 
 <script src="common.js"></script>
+<script>
+// 上传照片并加入瀑布流
+document.getElementById('fileInput').addEventListener('change', function(e) {
+  const file = e.target.files[0];
+  if (!file) return;
+
+  const url = URL.createObjectURL(file);
+  
+  // 新建图片
+  const img = document.createElement('img');
+  img.src = url;
+  
+  // 新建说明文字
+  const p = document.createElement('p');
+  p.innerText = "用户实拍 · 持妆效果展示";
+
+  // 加入瀑布流
+  document.getElementById('masonry').appendChild(img);
+  document.getElementById('masonry').appendChild(p);
+
+  alert("上传成功！+50兰纳积分");
+});
+</script>
+
 </body>
 </html>
