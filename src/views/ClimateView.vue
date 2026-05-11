@@ -1,0 +1,441 @@
+<template>
+  <div class="climate-page">
+
+    <div class="page-header">
+      <h1>{{ t('climate.title') }}</h1>
+      <p>基于你所在位置的实时气象数据，智能推荐今日妆容</p>
+    </div>
+
+    <!-- 天气数据卡片 -->
+    <div class="weather-section">
+      <div v-if="loading" class="loading">{{ t('common.loading') }}</div>
+      <div v-else-if="error" class="error">{{ error }}</div>
+      <div v-else class="weather-grid">
+
+        <div class="weather-card main-card">
+          <div class="location">📍 {{ locationName }}</div>
+          <div class="temp">{{ weather.temp }}°C</div>
+          <div class="weather-desc">{{ weatherDesc }}</div>
+        </div>
+
+        <div class="weather-card">
+          <div class="card-icon">💧</div>
+          <div class="card-label">{{ t('climate.humidity') }}</div>
+          <div class="card-value">{{ weather.humidity }}%</div>
+          <div class="card-bar">
+            <div class="bar-fill" :style="{ width: weather.humidity + '%', background: humidityColor }"></div>
+          </div>
+        </div>
+
+        <div class="weather-card">
+          <div class="card-icon">🌡️</div>
+          <div class="card-label">{{ t('climate.temp') }}</div>
+          <div class="card-value">{{ weather.temp }}°C</div>
+          <div class="card-bar">
+            <div class="bar-fill" :style="{ width: Math.min(weather.temp / 45 * 100, 100) + '%', background: tempColor }"></div>
+          </div>
+        </div>
+
+        <div class="weather-card">
+          <div class="card-icon">☀️</div>
+          <div class="card-label">{{ t('climate.uv') }}</div>
+          <div class="card-value">{{ weather.uv }}</div>
+          <div class="card-bar">
+            <div class="bar-fill" :style="{ width: Math.min(weather.uv / 11 * 100, 100) + '%', background: uvColor }"></div>
+          </div>
+        </div>
+
+        <!-- 脱妆风险仪表盘 -->
+        <div class="weather-card risk-card">
+          <div class="card-label">{{ t('climate.risk') }}</div>
+          <div class="risk-gauge">
+            <svg viewBox="0 0 120 70" width="160">
+              <path d="M10 65 A50 50 0 0 1 110 65" fill="none" stroke="#eee" stroke-width="12" stroke-linecap="round"/>
+              <path d="M10 65 A50 50 0 0 1 110 65" fill="none"
+                :stroke="riskColor" stroke-width="12" stroke-linecap="round"
+                :stroke-dasharray="`${riskScore * 1.57} 157`"/>
+              <text x="60" y="62" text-anchor="middle" font-size="18" font-weight="700" :fill="riskColor">{{ riskScore }}</text>
+            </svg>
+          </div>
+          <div class="risk-label" :style="{ color: riskColor }">{{ riskLevel }}</div>
+        </div>
+
+      </div>
+    </div>
+
+    <!-- 妆容建议 -->
+    <div class="advice-section">
+      <h2>今日妆容建议</h2>
+      <div class="advice-grid">
+        <div v-for="item in adviceList" :key="item.title" class="advice-card">
+          <div class="advice-icon">{{ item.icon }}</div>
+          <div class="advice-content">
+            <h3>{{ item.title }}</h3>
+            <p>{{ item.desc }}</p>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <!-- 产品推荐 -->
+    <div class="product-section">
+      <h2>推荐产品</h2>
+      <div class="product-grid">
+        <div v-for="p in recommendedProducts" :key="p.name" class="product-card">
+          <div class="product-emoji">{{ p.emoji }}</div>
+          <h3>{{ p.name }}</h3>
+          <p>{{ p.desc }}</p>
+          <a :href="p.shopeeUrl" target="_blank" class="buy-btn">{{ t('common.shopee') }} →</a>
+        </div>
+      </div>
+    </div>
+
+  </div>
+</template>
+
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useI18n } from 'vue-i18n'
+
+const { t } = useI18n()
+
+const loading = ref(true)
+const error = ref('')
+const locationName = ref('正在定位...')
+const weather = ref({ temp: 0, humidity: 0, uv: 0 })
+
+// 获取天气
+onMounted(async () => {
+  try {
+    const pos = await new Promise((resolve, reject) =>
+      navigator.geolocation.getCurrentPosition(resolve, reject, { timeout: 6000 })
+    ).catch(() => null)
+
+    let lat = 13.75, lon = 100.52 // 默认曼谷
+    if (pos) {
+      lat = pos.coords.latitude
+      lon = pos.coords.longitude
+    }
+
+    // 获取城市名
+    try {
+      const geoRes = await fetch(`https://nominatim.openstreetmap.org/reverse?lat=${lat}&lon=${lon}&format=json`)
+      const geoData = await geoRes.json()
+      locationName.value = geoData.address?.city || geoData.address?.town || geoData.address?.state || '当前位置'
+    } catch { locationName.value = '当前位置' }
+
+    // 获取天气
+    const res = await fetch(
+      `https://api.open-meteo.com/v1/forecast?latitude=${lat}&longitude=${lon}&current=temperature_2m,relative_humidity_2m,uv_index&timezone=auto`
+    )
+    const data = await res.json()
+    weather.value = {
+      temp: Math.round(data.current.temperature_2m),
+      humidity: data.current.relative_humidity_2m,
+      uv: Math.round(data.current.uv_index ?? 0),
+    }
+  } catch (e) {
+    error.value = '天气数据加载失败，请刷新重试'
+  } finally {
+    loading.value = false
+  }
+})
+
+// 脱妆风险评分 0-100
+const riskScore = computed(() => {
+  const h = weather.value.humidity
+  const t2 = weather.value.temp
+  const uv = weather.value.uv
+  return Math.min(100, Math.round(h * 0.5 + t2 * 1.2 + uv * 2))
+})
+
+const riskColor = computed(() => {
+  if (riskScore.value < 40) return '#4caf50'
+  if (riskScore.value < 70) return '#ff9800'
+  return '#f44336'
+})
+
+const riskLevel = computed(() => {
+  if (riskScore.value < 40) return '脱妆风险低 ✅'
+  if (riskScore.value < 70) return '脱妆风险中等 ⚠️'
+  return '脱妆风险高 🚨'
+})
+
+const weatherDesc = computed(() => {
+  const h = weather.value.humidity
+  const t2 = weather.value.temp
+  if (t2 > 35) return '高温酷热，注意防晒'
+  if (h > 80) return '高湿度，妆容容易脱落'
+  if (t2 < 20) return '天气凉爽，妆容持久'
+  return '天气适宜，正常妆容即可'
+})
+
+const humidityColor = computed(() => weather.value.humidity > 70 ? '#f44336' : '#4caf50')
+const tempColor = computed(() => weather.value.temp > 33 ? '#f44336' : '#ff9800')
+const uvColor = computed(() => weather.value.uv > 6 ? '#f44336' : '#ff9800')
+
+// 妆容建议
+const adviceList = computed(() => {
+  const h = weather.value.humidity
+  const uv = weather.value.uv
+  return [
+    {
+      icon: '🧴',
+      title: '妆前打底',
+      desc: h > 75 ? '高湿天气必用控油妆前乳，延长持妆时间至8小时' : '轻薄妆前乳即可，保持自然妆感',
+    },
+    {
+      icon: '☀️',
+      title: '防晒建议',
+      desc: uv > 6 ? `UV指数${uv}，必须使用SPF50+防晒，建议每2小时补涂` : `UV指数${uv}，SPF30防晒即可`,
+    },
+    {
+      icon: '💄',
+      title: '粉底选择',
+      desc: h > 75 ? '选用CORONG持妆粉底液，控油配方专为东南亚湿热气候研发' : '轻薄BB霜或气垫粉底，打造自然裸妆',
+    },
+    {
+      icon: '🌸',
+      title: '定妆技巧',
+      desc: h > 75 ? '用CORONG持久散粉大量定妆，T区重点扑粉，随身携带补妆粉' : '轻薄定妆粉，保持透明感',
+    },
+  ]
+})
+
+// 产品推荐
+const recommendedProducts = computed(() => [
+  {
+    emoji: '💧',
+    name: 'CORONG 持妆粉底液',
+    desc: weather.value.humidity > 75 ? '控油持妆配方，专为高湿度气候研发' : '轻薄透气，自然裸肤',
+    shopeeUrl: 'https://shopee.co.th',
+  },
+  {
+    emoji: '✨',
+    name: 'CORONG 持久散粉',
+    desc: '兰纳花卉提取物，定妆持久12小时',
+    shopeeUrl: 'https://shopee.co.th',
+  },
+  {
+    emoji: '🛡️',
+    name: 'CORONG 妆前乳',
+    desc: weather.value.uv > 6 ? '含SPF50防晒，一步完成防晒+打底' : '控油保湿二合一，轻松上妆',
+    shopeeUrl: 'https://shopee.co.th',
+  },
+])
+</script>
+
+<style scoped>
+.climate-page {
+  max-width: 1100px;
+  margin: 0 auto;
+  padding: 48px 24px;
+}
+
+.page-header {
+  text-align: center;
+  margin-bottom: 48px;
+}
+
+.page-header h1 {
+  font-size: 2.2rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.page-header p {
+  color: #888;
+  font-size: 1rem;
+}
+
+.loading, .error {
+  text-align: center;
+  padding: 60px;
+  color: #888;
+  font-size: 1.1rem;
+}
+
+.weather-grid {
+  display: grid;
+  grid-template-columns: 2fr 1fr 1fr 1fr 1.5fr;
+  gap: 16px;
+  margin-bottom: 48px;
+}
+
+.weather-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 24px;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+}
+
+.main-card {
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+}
+
+.location {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 8px;
+}
+
+.temp {
+  font-size: 3.5rem;
+  font-weight: 800;
+  color: #d94a87;
+  line-height: 1;
+  margin-bottom: 8px;
+}
+
+.weather-desc {
+  font-size: 0.9rem;
+  color: #666;
+}
+
+.card-icon {
+  font-size: 1.5rem;
+  margin-bottom: 8px;
+}
+
+.card-label {
+  font-size: 0.8rem;
+  color: #888;
+  margin-bottom: 4px;
+}
+
+.card-value {
+  font-size: 1.6rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  margin-bottom: 12px;
+}
+
+.card-bar {
+  height: 6px;
+  background: #f0f0f0;
+  border-radius: 3px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  border-radius: 3px;
+  transition: width 1s ease;
+}
+
+.risk-card {
+  text-align: center;
+}
+
+.risk-gauge {
+  display: flex;
+  justify-content: center;
+  margin: 8px 0;
+}
+
+.risk-label {
+  font-weight: 600;
+  font-size: 0.9rem;
+}
+
+/* Advice */
+.advice-section {
+  margin-bottom: 48px;
+}
+
+.advice-section h2,
+.product-section h2 {
+  font-size: 1.6rem;
+  font-weight: 700;
+  margin-bottom: 24px;
+  color: #1a1a1a;
+}
+
+.advice-grid {
+  display: grid;
+  grid-template-columns: repeat(2, 1fr);
+  gap: 16px;
+}
+
+.advice-card {
+  background: #fff;
+  border-radius: 12px;
+  padding: 20px;
+  display: flex;
+  gap: 16px;
+  box-shadow: 0 4px 16px rgba(0,0,0,0.05);
+}
+
+.advice-icon {
+  font-size: 2rem;
+  flex-shrink: 0;
+}
+
+.advice-content h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 6px;
+}
+
+.advice-content p {
+  font-size: 0.88rem;
+  color: #666;
+  line-height: 1.5;
+}
+
+/* Products */
+.product-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 1fr);
+  gap: 20px;
+}
+
+.product-card {
+  background: #fff;
+  border-radius: 16px;
+  padding: 28px 24px;
+  text-align: center;
+  box-shadow: 0 4px 20px rgba(0,0,0,0.06);
+  transition: transform 0.3s;
+}
+
+.product-card:hover {
+  transform: translateY(-4px);
+}
+
+.product-emoji {
+  font-size: 2.5rem;
+  margin-bottom: 12px;
+}
+
+.product-card h3 {
+  font-size: 1rem;
+  font-weight: 600;
+  margin-bottom: 8px;
+}
+
+.product-card p {
+  font-size: 0.85rem;
+  color: #888;
+  margin-bottom: 16px;
+  line-height: 1.5;
+}
+
+.buy-btn {
+  display: inline-block;
+  background: #ee4d2d;
+  color: #fff;
+  padding: 8px 20px;
+  border-radius: 20px;
+  font-size: 0.85rem;
+  font-weight: 600;
+  transition: opacity 0.2s;
+}
+
+.buy-btn:hover {
+  opacity: 0.85;
+}
+</style>
