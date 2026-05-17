@@ -9,6 +9,7 @@ const router = createRouter({
     { path: '/skin', component: () => import('../views/SkinView.vue') },
     { path: '/ugc', component: () => import('../views/UGCView.vue') },
     { path: '/science', component: () => import('../views/ScienceView.vue') },
+    { path: '/ar', component: () => import('../views/ARView.vue') },
   ]
 })
 

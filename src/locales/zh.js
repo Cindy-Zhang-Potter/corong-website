@@ -5,6 +5,7 @@ export default {
     skin: 'AI肤色',
     ugc: '社区',
     science: '科学中心',
+    ar: 'AR试妆'
   },
   hero: {
     title: 'CORONG 蔻容',

@@ -5,6 +5,7 @@ export default {
     skin: 'Analisis Warna Kulit AI',
     ugc: 'Komuniti',
     science: 'Pusat Sains',
+    ar: 'Cuba AR'
   },
   hero: {
     title: 'CORONG',

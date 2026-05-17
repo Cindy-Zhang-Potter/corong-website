@@ -8,8 +8,10 @@
       <router-link to="/">{{ t('nav.home') }}</router-link>
       <router-link to="/climate">{{ t('nav.climate') }}</router-link>
       <router-link to="/skin">{{ t('nav.skin') }}</router-link>
+      <router-link to="/ar">{{ t('nav.ar') }}</router-link>
       <router-link to="/ugc">{{ t('nav.ugc') }}</router-link>
       <router-link to="/science">{{ t('nav.science') }}</router-link>
+      
     </div>
 
     <div class="lang-switcher">

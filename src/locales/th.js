@@ -5,6 +5,7 @@ export default {
     skin: 'AI วิเคราะห์สีผิว',
     ugc: 'ชุมชน',
     science: 'ศูนย์วิทยาศาสตร์',
+    ar: 'ลอง AR'
   },
   hero: {
     title: 'CORONG',
