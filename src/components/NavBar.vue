@@ -1,8 +1,11 @@
 <template>
   <nav class="navbar">
     <div class="navbar-brand">
-      <router-link to="/">CORONG 蔻容</router-link>
-    </div>
+  <router-link to="/" class="navbar-brand-wrap">
+    <img src="@/assets/logos/logo-icon.svg" class="navbar-flower"/>
+    <span class="brand-text">CORONG <em>蔻容</em></span>
+  </router-link>
+</div>
 
     <div class="navbar-links">
       <router-link to="/">{{ t('nav.home') }}</router-link>
@@ -101,5 +104,71 @@ const langs = [
   background: #d94a87;
   border-color: #d94a87;
   color: #fff;
+}
+
+@media (max-width: 768px) {
+  .navbar {
+    flex-wrap: wrap;
+    height: auto;
+    padding: 12px 16px;
+    gap: 8px;
+  }
+
+  .navbar-brand a {
+    font-size: 1.1rem;
+  }
+
+  .navbar-links {
+    order: 3;
+    width: 100%;
+    overflow-x: auto;
+    gap: 0;
+    padding-bottom: 4px;
+  }
+
+  .navbar-links a {
+    font-size: 0.82rem;
+    padding: 6px 10px;
+    white-space: nowrap;
+    flex-shrink: 0;
+  }
+
+  .lang-switcher {
+    margin-left: auto;
+  }
+
+  .lang-switcher button {
+    padding: 4px 8px;
+    font-size: 0.75rem;
+  }
+}
+
+.navbar-logo {
+  height: 44px;
+  width: auto;
+}
+
+.navbar-brand-wrap {
+  display: flex;
+  align-items: center;
+  gap: 10px;
+  text-decoration: none;
+}
+
+.navbar-flower {
+  height: 40px;
+  width: 40px;
+}
+
+.brand-text {
+  font-size: 1.3rem;
+  font-weight: 700;
+  color: #1a1a1a;
+  letter-spacing: 1px;
+}
+
+.brand-text em {
+  color: #d94a87;
+  font-style: normal;
 }
 </style>

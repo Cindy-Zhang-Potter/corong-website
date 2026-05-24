@@ -438,4 +438,35 @@ const recommendedProducts = computed(() => [
 .buy-btn:hover {
   opacity: 0.85;
 }
+
+@media (max-width: 768px) {
+  .climate-page {
+    padding: 24px 16px;
+  }
+
+  .weather-grid {
+    grid-template-columns: 1fr 1fr;
+    gap: 12px;
+  }
+
+  .weather-card.main-card {
+    grid-column: 1 / -1;
+  }
+
+  .risk-card {
+    grid-column: 1 / -1;
+  }
+
+  .advice-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .product-grid {
+    grid-template-columns: 1fr;
+  }
+
+  .page-header h1 {
+    font-size: 1.6rem;
+  }
+}
 </style>
