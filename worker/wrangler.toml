@@ -1,0 +1,12 @@
+name = "corong-api"
+main = "worker.js"
+compatibility_date = "2024-01-01"
+
+[[d1_databases]]
+binding = "CORONG_DB"
+database_name = "corong-db"
+database_id = "待填写"
+
+[[r2_buckets]]
+binding = "CORONG_BUCKET"
+bucket_name = "corong-assets"

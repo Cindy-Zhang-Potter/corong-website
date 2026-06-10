@@ -174,7 +174,7 @@ async function analyzePhoto() {
             { type: 'image', source: { type: 'base64', media_type: 'image/jpeg', data: base64 } },
             {
               type: 'text',
-              text: `你是CORONG蔻容的AI肤色分析师，专注东南亚肤色。分析这张照片中人物的肤色，用JSON格式返回（只返回JSON，不要其他文字）：
+              text: `你是KOURONG蔻蓉的AI肤色分析师，专注东南亚肤色。分析这张照片中人物的肤色，用JSON格式返回（只返回JSON，不要其他文字）：
 {
   "toneName": "肤色名称（从：象牙白/自然米/小麦色/蜂蜜棕/深棕色/深邃棕 中选一个）",
   "hexColor": "最接近的肤色十六进制颜色值",

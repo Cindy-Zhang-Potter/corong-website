@@ -5,7 +5,7 @@
   <circle cx="100" cy="196" r="2.5" fill="#d94a87"/>
   <circle cx="4" cy="100" r="2.5" fill="#d94a87"/>
   <circle cx="196" cy="100" r="2.5" fill="#d94a87"/>
-  <text x="100" y="30" font-family="sans-serif" font-size="7.5" fill="#d94a87" text-anchor="middle" letter-spacing="4">LANNA · CLIMATE · SMART · BEAUTY</text>
+  <text x="100" y="30" font-family="sans-serif" font-size="7.5" fill="#d94a87" text-anchor="middle" letter-spacing="3">LANNA · CLIMATE · SMART · BEAUTY</text>
   <g transform="translate(100, 94)">
     <ellipse cx="0" cy="-26" rx="7" ry="16" fill="#d94a87" opacity="0.9" transform="rotate(0)"/>
     <ellipse cx="0" cy="-26" rx="7" ry="16" fill="#d94a87" opacity="0.9" transform="rotate(60)"/>
@@ -22,8 +22,8 @@
     <circle cx="0" cy="0" r="9" fill="#f7c5d8"/>
     <circle cx="0" cy="0" r="4.5" fill="#d94a87"/>
   </g>
-  <text x="100" y="122" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#1a1a1a" text-anchor="middle" letter-spacing="3">CORONG</text>
-  <text x="100" y="140" font-family="Georgia,serif" font-size="10" fill="#d94a87" text-anchor="middle" letter-spacing="5">蔻  容</text>
+  <text x="100" y="122" font-family="Georgia,serif" font-size="16" font-weight="700" fill="#1a1a1a" text-anchor="middle" letter-spacing="2">KOURONG</text>
+  <text x="100" y="140" font-family="Georgia,serif" font-size="10" fill="#d94a87" text-anchor="middle" letter-spacing="5">蔻  蓉</text>
   <line x1="62" y1="148" x2="138" y2="148" stroke="#d94a87" stroke-width="0.5"/>
   <text x="100" y="161" font-family="sans-serif" font-size="7" fill="#aaa" text-anchor="middle" letter-spacing="2">EST. CHIANG MAI</text>
 </svg>

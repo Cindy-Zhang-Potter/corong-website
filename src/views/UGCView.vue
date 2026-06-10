@@ -165,10 +165,10 @@ function toggleLike(post) {
 }
 
 const posts = ref([
-  { id: 1, img: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80', userName: 'Nattaya_BKK', avatarColor: '#ff8cc8', verified: true, caption: '今日清透裸妆，配合CORONG W21色号超适合东南亚肤色！', tags: ['清透裸妆', '自然日常'], likes: 234, liked: false, shade: 'W21 自然小麦', shadeColor: '#C8956C' },
-  { id: 2, img: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&q=80', userName: 'Malee_CM', avatarColor: '#a855f7', verified: true, caption: '清迈旅行妆，高温高湿照样持妆8小时！感谢CORONG✨', tags: ['泰式甜美', '清透裸妆'], likes: 189, liked: false, shade: 'N15 象牙裸', shadeColor: '#E8C99A' },
+  { id: 1, img: 'https://images.unsplash.com/photo-1522337360788-8b13dee7a37e?w=400&q=80', userName: 'Nattaya_BKK', avatarColor: '#ff8cc8', verified: true, caption: '今日清透裸妆，配合KOURONG W21色号超适合东南亚肤色！', tags: ['清透裸妆', '自然日常'], likes: 234, liked: false, shade: 'W21 自然小麦', shadeColor: '#C8956C' },
+  { id: 2, img: 'https://images.unsplash.com/photo-1487412720507-e7ab37603c6f?w=400&q=80', userName: 'Malee_CM', avatarColor: '#a855f7', verified: true, caption: '清迈旅行妆，高温高湿照样持妆8小时！感谢KOURONG✨', tags: ['泰式甜美', '清透裸妆'], likes: 189, liked: false, shade: 'N15 象牙裸', shadeColor: '#E8C99A' },
   { id: 3, img: 'https://images.unsplash.com/photo-1512496015851-a90fb38ba796?w=400&q=80', userName: 'Sirin_TH', avatarColor: '#f59e0b', verified: false, caption: '复古红唇配哑光粉底，这个组合绝了🔥', tags: ['复古红唇'], likes: 312, liked: false, shade: 'D30 深邃棕', shadeColor: '#7B4A2D' },
-  { id: 4, img: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&q=80', userName: 'Aileen_KL', avatarColor: '#10b981', verified: false, caption: '马来西亚的天气太热了，还好有CORONG控油散粉救命', tags: ['自然日常'], likes: 97, liked: false, shade: 'W22 蜂蜜裸色', shadeColor: '#B8845C' },
+  { id: 4, img: 'https://images.unsplash.com/photo-1519699047748-de8e457a634e?w=400&q=80', userName: 'Aileen_KL', avatarColor: '#10b981', verified: false, caption: '马来西亚的天气太热了，还好有KOURONG控油散粉救命', tags: ['自然日常'], likes: 97, liked: false, shade: 'W22 蜂蜜裸色', shadeColor: '#B8845C' },
   { id: 5, img: 'https://images.unsplash.com/photo-1503236823255-94609f598e71?w=400&q=80', userName: 'Yuki_JP', avatarColor: '#3b82f6', verified: true, caption: '日系软糯妆容，奶油肌感觉超适合用象牙白色号', tags: ['日系软糯'], likes: 445, liked: false, shade: 'N10 象牙白', shadeColor: '#F5E6D3' },
   { id: 6, img: 'https://images.unsplash.com/photo-1526510747491-58f928ec870f?w=400&q=80', userName: 'Priya_SG', avatarColor: '#ef4444', verified: false, caption: '新加坡湿热天气测评！全天持妆无问题 💕', tags: ['泰式甜美', '自然日常'], likes: 168, liked: false, shade: 'D25 深棕裸', shadeColor: '#A0674A' },
 ])

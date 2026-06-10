@@ -2,9 +2,9 @@
   <footer class="footer">
     <div class="footer-inner">
       <div class="footer-brand">
-        <img src="@/assets/logos/logo-icon.svg" class="footer-logo" alt="CORONG"/>
+        <img src="@/assets/logos/logo-icon.svg" class="footer-logo" alt="KOURONG"/>
         <div>
-          <div class="footer-name">CORONG <span>蔻容</span></div>
+          <div class="footer-name">KOURONG <span>蔻蓉</span></div>
           <p class="footer-tagline">{{ t('footer.tagline') }}</p>
         </div>
       </div>
@@ -29,7 +29,7 @@
 
       <div class="footer-contact">
         <h4>{{ t('footer.contact_title') }}</h4>
-        <p>hello@corong.beauty</p>
+        <p>hello@kourong.beauty</p>
         <p>Chiang Mai, Thailand</p>
         <p>{{ t('footer.made') }}</p>
       </div>
@@ -38,9 +38,9 @@
     <div class="footer-bottom">
       <span>{{ t('footer.rights') }}</span>
       <div class="footer-badges">
-        <span class="badge">🏆 Geneva Gold</span>
-        <span class="badge">🌿 Natural</span>
-        <span class="badge">✅ Dermatologist Tested</span>
+        <span class="badge">🔬 纳米技术专利申请中</span>
+        <span class="badge">🌿 兰纳草本成分</span>
+        <span class="badge">✅ 皮肤科测试</span>
       </div>
     </div>
   </footer>
@@ -52,109 +52,25 @@ const { t } = useI18n()
 </script>
 
 <style scoped>
-.footer {
-  background: #1a1a1a;
-  color: #fff;
-  padding: 64px 8% 0;
-  margin-top: 80px;
-}
-
-.footer-inner {
-  display: grid;
-  grid-template-columns: 2fr 1fr 1fr 1.5fr;
-  gap: 48px;
-  padding-bottom: 48px;
-  border-bottom: 1px solid rgba(255,255,255,0.08);
-}
-
+.footer { background: #1a1a1a; color: #fff; padding: 64px 8% 0; margin-top: 80px; }
+.footer-inner { display: grid; grid-template-columns: 2fr 1fr 1fr 1.5fr; gap: 48px; padding-bottom: 48px; border-bottom: 1px solid rgba(255,255,255,0.08); }
 .footer-brand { display: flex; gap: 16px; align-items: flex-start; }
-
-.footer-logo {
-  width: 48px;
-  height: 48px;
-  flex-shrink: 0;
-}
-
-.footer-name {
-  font-size: 1.2rem;
-  font-weight: 700;
-  margin-bottom: 8px;
-  letter-spacing: 1px;
-}
-
+.footer-logo { width: 48px; height: 48px; flex-shrink: 0; }
+.footer-name { font-size: 1.2rem; font-weight: 700; margin-bottom: 8px; letter-spacing: 1px; }
 .footer-name span { color: #d94a87; }
-
-.footer-tagline {
-  font-size: 0.85rem;
-  opacity: 0.5;
-  line-height: 1.6;
-  max-width: 220px;
-}
-
-.footer-links h4,
-.footer-social h4,
-.footer-contact h4 {
-  font-size: 0.82rem;
-  font-weight: 600;
-  letter-spacing: 2px;
-  opacity: 0.4;
-  margin-bottom: 16px;
-  text-transform: uppercase;
-}
-
-.footer-links a,
-.footer-social a {
-  display: block;
-  color: rgba(255,255,255,0.7);
-  font-size: 0.9rem;
-  margin-bottom: 10px;
-  transition: color 0.2s;
-}
-
-.footer-links a:hover,
-.footer-social a:hover { color: #d94a87; }
-
-.footer-contact p {
-  font-size: 0.9rem;
-  color: rgba(255,255,255,0.7);
-  margin-bottom: 8px;
-  line-height: 1.5;
-}
-
-.footer-bottom {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-  padding: 20px 0;
-  font-size: 0.8rem;
-  opacity: 0.4;
-  flex-wrap: wrap;
-  gap: 12px;
-}
-
+.footer-tagline { font-size: 0.85rem; opacity: 0.5; line-height: 1.6; max-width: 220px; }
+.footer-links h4, .footer-social h4, .footer-contact h4 { font-size: 0.82rem; font-weight: 600; letter-spacing: 2px; opacity: 0.4; margin-bottom: 16px; text-transform: uppercase; }
+.footer-links a, .footer-social a { display: block; color: rgba(255,255,255,0.7); font-size: 0.9rem; margin-bottom: 10px; transition: color 0.2s; }
+.footer-links a:hover, .footer-social a:hover { color: #d94a87; }
+.footer-contact p { font-size: 0.9rem; color: rgba(255,255,255,0.7); margin-bottom: 8px; line-height: 1.5; }
+.footer-bottom { display: flex; justify-content: space-between; align-items: center; padding: 20px 0; font-size: 0.8rem; opacity: 0.4; flex-wrap: wrap; gap: 12px; }
 .footer-badges { display: flex; gap: 12px; flex-wrap: wrap; }
-
-.badge {
-  background: rgba(255,255,255,0.08);
-  padding: 4px 10px;
-  border-radius: 20px;
-  font-size: 0.75rem;
-}
+.badge { background: rgba(255,255,255,0.08); padding: 4px 10px; border-radius: 20px; font-size: 0.75rem; }
 
 @media (max-width: 768px) {
   .footer { padding: 48px 6% 0; margin-top: 48px; }
-
-  .footer-inner {
-    grid-template-columns: 1fr 1fr;
-    gap: 32px;
-  }
-
+  .footer-inner { grid-template-columns: 1fr 1fr; gap: 32px; }
   .footer-brand { grid-column: 1 / -1; }
-
-  .footer-bottom {
-    flex-direction: column;
-    align-items: flex-start;
-    gap: 16px;
-  }
+  .footer-bottom { flex-direction: column; align-items: flex-start; }
 }
 </style>
