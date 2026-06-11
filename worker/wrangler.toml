@@ -5,8 +5,4 @@ compatibility_date = "2024-01-01"
 [[d1_databases]]
 binding = "CORONG_DB"
 database_name = "corong-db"
-database_id = "待填写"
-
-[[r2_buckets]]
-binding = "CORONG_BUCKET"
-bucket_name = "corong-assets"
+database_id = "558c641d-da1b-4489-b253-33737ff4fb8d"
